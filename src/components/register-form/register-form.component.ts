@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, output, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, inject, signal, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 
@@ -8,7 +8,7 @@ import { UserService } from '../../services/user.service';
   templateUrl: './register-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
   switchToLogin = output<void>();
   showSuccessMessage = signal(false);
 
@@ -31,6 +31,14 @@ export class RegisterFormComponent {
 
   get pin() {
     return this.registerForm.get('pin');
+  }
+
+  ngOnInit() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pinParam = urlParams.get('pin');
+    if (pinParam) {
+      this.registerForm.patchValue({ pin: pinParam });
+    }
   }
 
   register() {

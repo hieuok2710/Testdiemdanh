@@ -16,7 +16,13 @@ export class AdminDashboardComponent implements OnInit {
   private userService = inject(UserService);
 
   users = this.userService.users;
-  registrationUrl = signal('');
+  
+  registrationUrl = computed(() => {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const pin = this.userService.generalPin();
+    return `${baseUrl}?view=register&pin=${pin}`;
+  });
+
   qrCodeUrl = computed(() => `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(this.registrationUrl())}`);
   copied = signal(false);
 
@@ -30,9 +36,6 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.pinForm.patchValue({ pin: this.userService.generalPin() });
-    // Construct the registration URL that directs users to the register view
-    const baseUrl = window.location.origin + window.location.pathname;
-    this.registrationUrl.set(`${baseUrl}?view=register`);
   }
 
   setGeneralPin() {
@@ -48,7 +51,9 @@ export class AdminDashboardComponent implements OnInit {
   generateRandomPin() {
     const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
     this.pinForm.patchValue({ pin: randomPin });
-    this.pinForm.markAsDirty();
+    // Immediately set the new pin in the service, which updates the URL and QR code
+    this.userService.setGeneralPin(randomPin);
+    this.pinForm.markAsPristine();
   }
 
   copyUrl() {
