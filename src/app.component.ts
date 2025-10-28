@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
@@ -9,8 +9,16 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LoginFormComponent, RegisterFormComponent, AdminDashboardComponent],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   view = signal<'login' | 'register' | 'admin'>('login');
+
+  ngOnInit() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewParam = urlParams.get('view');
+    if (viewParam === 'register') {
+      this.view.set('register');
+    }
+  }
 
   switchToRegister() {
     this.view.set('register');

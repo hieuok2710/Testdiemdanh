@@ -9,50 +9,73 @@
     </button>
   </header>
 
-  <section class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Thiết lập mã pin chung</h2>
-    <form [formGroup]="pinForm" (ngSubmit)="setGeneralPin()" novalidate class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-      <div class="flex flex-wrap items-end gap-6">
-        <div class="flex-grow">
-          <label for="pin" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Mã pin đăng ký chung</label>
-          <input
-            id="pin"
-            type="text"
-            formControlName="pin"
-            placeholder="4-6 chữ số"
-            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            [class.border-red-500]="pin?.invalid && (pin?.dirty || pin?.touched)"
-          />
-           @if (pin?.invalid && (pin?.dirty || pin?.touched)) {
-            <div class="text-red-500 text-xs mt-1">
-              @if (pin?.errors?.['required']) {
-                <p>Mã pin là bắt buộc.</p>
-              }
-              @if (pin?.errors?.['pattern']) {
-                <p>Mã pin phải là 4-6 chữ số.</p>
-              }
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+    <div class="lg:col-span-2">
+      <section class="h-full">
+        <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Thiết lập mã pin chung</h2>
+        <form [formGroup]="pinForm" (ngSubmit)="setGeneralPin()" novalidate class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg h-full flex flex-col justify-between">
+          <div>
+            <label for="pin" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Mã pin đăng ký chung</label>
+            <input
+              id="pin"
+              type="text"
+              formControlName="pin"
+              placeholder="4-6 chữ số"
+              class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="pin?.invalid && (pin?.dirty || pin?.touched)"
+            />
+            @if (pin?.invalid && (pin?.dirty || pin?.touched)) {
+              <div class="text-red-500 text-xs mt-1">
+                @if (pin?.errors?.['required']) {
+                  <p>Mã pin là bắt buộc.</p>
+                }
+                @if (pin?.errors?.['pattern']) {
+                  <p>Mã pin phải là 4-6 chữ số.</p>
+                }
+              </div>
+            }
+          </div>
+          <div class="flex-shrink-0 flex items-center gap-2 mt-4">
+            <button
+              type="button"
+              (click)="generateRandomPin()"
+              class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200"
+            >
+              Tạo ngẫu nhiên
+            </button>
+            <button
+              type="submit"
+              [disabled]="pinForm.invalid || pinForm.pristine"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200 disabled:bg-blue-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+            >
+              Lưu thay đổi
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+    <div class="lg:col-span-1">
+       <section>
+        <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Chia sẻ liên kết</h2>
+        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg text-center">
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Quét mã QR hoặc sao chép liên kết để gửi cho người dùng đăng ký.</p>
+            <div class="flex justify-center mb-4">
+                 <img [src]="qrCodeUrl()" alt="Mã QR đăng ký" class="rounded-lg shadow-md" />
             </div>
-          }
+            <div class="relative flex items-center">
+                <input type="text" [value]="registrationUrl()" readonly class="w-full pl-3 pr-20 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-300 text-sm truncate">
+                <button (click)="copyUrl()" class="absolute right-1 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-semibold text-white rounded-md transition-colors duration-200" [class.bg-green-500]="copied()" [class.hover:bg-green-600]="copied()" [class.bg-blue-600]="!copied()" [class.hover:bg-blue-700]="!copied()">
+                    @if (copied()) {
+                        <span>Đã chép!</span>
+                    } @else {
+                        <span>Sao chép</span>
+                    }
+                </button>
+            </div>
         </div>
-        <div class="flex-shrink-0 flex items-center gap-2">
-          <button
-            type="button"
-            (click)="generateRandomPin()"
-            class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200"
-          >
-            Tạo ngẫu nhiên
-          </button>
-          <button
-            type="submit"
-            [disabled]="pinForm.invalid || pinForm.pristine"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200 disabled:bg-blue-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
-          >
-            Lưu thay đổi
-          </button>
-        </div>
-      </div>
-    </form>
-  </section>
+      </section>
+    </div>
+  </div>
 
   <section>
     <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Danh sách người dùng đã đăng ký</h2>
