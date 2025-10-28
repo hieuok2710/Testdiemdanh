@@ -25,13 +25,27 @@ export class AdminDashboardComponent implements OnInit {
 
   qrCodeUrl = computed(() => `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(this.registrationUrl())}`);
   copied = signal(false);
+  showAdminRegisterSuccess = signal(false);
 
   pinForm = this.fb.group({
     pin: ['', [Validators.required, Validators.pattern('^[0-9]{4,6}$')]],
   });
+  
+  adminRegisterForm = this.fb.group({
+    fullName: ['', [Validators.required, Validators.minLength(3)]],
+    phone: ['', [Validators.required, Validators.pattern('^[0-9]{10,11}$')]],
+  });
 
   get pin() {
     return this.pinForm.get('pin');
+  }
+  
+  get adminFullName() {
+    return this.adminRegisterForm.get('fullName');
+  }
+
+  get adminPhone() {
+    return this.adminRegisterForm.get('phone');
   }
 
   ngOnInit() {
@@ -61,6 +75,21 @@ export class AdminDashboardComponent implements OnInit {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2500);
     });
+  }
+  
+  registerUserFromAdmin() {
+    if (this.adminRegisterForm.invalid) {
+      this.adminRegisterForm.markAllAsTouched();
+      return;
+    }
+    const { fullName, phone } = this.adminRegisterForm.getRawValue();
+    this.userService.registerUser(fullName!, phone!);
+    this.adminRegisterForm.reset();
+    
+    this.showAdminRegisterSuccess.set(true);
+    setTimeout(() => {
+      this.showAdminRegisterSuccess.set(false);
+    }, 3000);
   }
 
   toggleStatus(userId: string) {

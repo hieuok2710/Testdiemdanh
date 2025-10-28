@@ -51,6 +51,7 @@ export class RegisterFormComponent implements OnInit {
 
     if (!this.userService.validatePin(pin!)) {
       this.pin?.setErrors({ invalidPin: true });
+      alert('Mã PIN không hợp lệ. Vui lòng kiểm tra lại mã PIN do giáo viên cung cấp.');
       return;
     }
 
