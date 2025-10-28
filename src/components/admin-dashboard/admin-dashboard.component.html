@@ -1,0 +1,109 @@
+<div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg w-full transition-all duration-300">
+  <header class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Bảng điều khiển</h1>
+    <button
+      (click)="onLogout()"
+      class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200"
+    >
+      Đăng xuất
+    </button>
+  </header>
+
+  <section class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Thiết lập mã pin chung</h2>
+    <form [formGroup]="pinForm" (ngSubmit)="setGeneralPin()" novalidate class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+      <div class="flex flex-wrap items-end gap-6">
+        <div class="flex-grow">
+          <label for="pin" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Mã pin đăng ký chung</label>
+          <input
+            id="pin"
+            type="text"
+            formControlName="pin"
+            placeholder="4-6 chữ số"
+            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="pin?.invalid && (pin?.dirty || pin?.touched)"
+          />
+           @if (pin?.invalid && (pin?.dirty || pin?.touched)) {
+            <div class="text-red-500 text-xs mt-1">
+              @if (pin?.errors?.['required']) {
+                <p>Mã pin là bắt buộc.</p>
+              }
+              @if (pin?.errors?.['pattern']) {
+                <p>Mã pin phải là 4-6 chữ số.</p>
+              }
+            </div>
+          }
+        </div>
+        <div class="flex-shrink-0 flex items-center gap-2">
+          <button
+            type="button"
+            (click)="generateRandomPin()"
+            class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200"
+          >
+            Tạo ngẫu nhiên
+          </button>
+          <button
+            type="submit"
+            [disabled]="pinForm.invalid || pinForm.pristine"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-200 disabled:bg-blue-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+          >
+            Lưu thay đổi
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <section>
+    <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Danh sách người dùng đã đăng ký</h2>
+    <div class="overflow-x-auto bg-white dark:bg-gray-700 rounded-lg shadow">
+      <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-3">Mã số</th>
+            <th scope="col" class="px-6 py-3">Họ và tên</th>
+            <th scope="col" class="px-6 py-3">Số điện thoại/Zalo</th>
+            <th scope="col" class="px-6 py-3">Thời gian đăng ký</th>
+            <th scope="col" class="px-6 py-3 text-center">Xác nhận</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr class="bg-white dark:bg-gray-900 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {{ user.id }}
+              </th>
+              <td class="px-6 py-4">{{ user.fullName }}</td>
+              <td class="px-6 py-4">{{ user.phone }}</td>
+              <td class="px-6 py-4">{{ user.registrationTime | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td class="px-6 py-4 text-center">
+                <button
+                  (click)="toggleStatus(user.id)"
+                  class="px-3 py-1 text-xs font-medium text-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200"
+                  [class.bg-green-500]="user.status === 'present'"
+                  [class.hover:bg-green-600]="user.status === 'present'"
+                  [class.focus:ring-green-500]="user.status === 'present'"
+                  [class.bg-yellow-500]="user.status === 'absent'"
+                  [class.hover:bg-yellow-600]="user.status === 'absent'"
+                  [class.focus:ring-yellow-500]="user.status === 'absent'"
+                >
+                  @if (user.status === 'present') {
+                    <span>Có mặt</span>
+                  } @else {
+                    <span>Vắng mặt</span>
+                  }
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
+                Chưa có người dùng nào đăng ký.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,5 @@
+{
+  "name": "Biểu mẫu Đăng nhập và Đăng ký",
+  "description": "Một ứng dụng Angular đơn giản để trình bày biểu mẫu đăng nhập và đăng ký người dùng với giao diện hiện đại sử dụng Tailwind CSS.",
+  "requestFramePermissions": []
+}

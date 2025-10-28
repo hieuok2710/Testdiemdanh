@@ -1,0 +1,15 @@
+<main class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+  <div class="w-full transition-all duration-500" [class.max-w-md]="view() !== 'admin'" [class.max-w-4xl]="view() === 'admin'">
+    @switch (view()) {
+      @case ('login') {
+        <app-login-form (switchToRegister)="switchToRegister()" (loginSuccess)="handleLoginSuccess($event)" />
+      }
+      @case ('register') {
+        <app-register-form (switchToLogin)="switchToLogin()" />
+      }
+      @case ('admin') {
+        <app-admin-dashboard (logout)="handleLogout()" />
+      }
+    }
+  </div>
+</main>
